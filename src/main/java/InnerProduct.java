@@ -32,8 +32,7 @@ public class InnerProduct {
   }
 
   static EncryptObj encrypt(BigInteger[] mpk, BigInteger[] x, Group group) {
-    BigInteger random = GroupGenerator.nextRandomBigInteger(BigInteger.ONE,
-        group.q().subtract(BigInteger.ONE), group.q().subtract(BigInteger.ONE).bitLength());
+    BigInteger random = group.randomElementInQ(BigInteger.ONE);
     BigInteger ct0 = group.generator().modPow(random, group.prime());
     BigInteger[] ci = new BigInteger[3];
     for (int i = 0; i < 3; i++) {
@@ -47,9 +46,7 @@ public class InnerProduct {
     BigInteger[] msk = new BigInteger[cipherSize];
     Group group = Group.generateGroup(security);
     for (int i = 0; i < cipherSize; i++) {
-      msk[i] = GroupGenerator.nextRandomBigInteger(BigInteger.ONE,
-          group.q().subtract(BigInteger.ONE),
-          group.q().subtract(BigInteger.ONE).bitLength());
+      msk[i] = group.randomElementInQ(BigInteger.ONE);
     }
 
     BigInteger[] mpk = new BigInteger[cipherSize];
