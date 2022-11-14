@@ -1,3 +1,5 @@
+package inner;
+
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -6,8 +8,6 @@ public record Group(BigInteger prime, BigInteger q, BigInteger generator) {
   static Random random = new Random();
 
   /**
-   * https://crypto.stackexchange.com/questions/9006/how-to-find-generator-g-in-a-cyclic-group/9011#9011
-   *
    * @param security security parameter
    * @return group.
    */
@@ -23,8 +23,7 @@ public record Group(BigInteger prime, BigInteger q, BigInteger generator) {
         while (true) {
           BigInteger randomBig = randomElement(BigInteger.TWO,
               prime.subtract(BigInteger.ONE).bitLength());
-          BigInteger pMinusOneDivQ = prime.subtract(BigInteger.ONE).divide(q);
-          generator = randomBig.modPow(pMinusOneDivQ, prime);
+          generator = randomBig.modPow(BigInteger.TWO, prime);
           if (generator.compareTo(BigInteger.ONE) != 0) {
             break;
           }
@@ -35,7 +34,6 @@ public record Group(BigInteger prime, BigInteger q, BigInteger generator) {
     return new Group(prime, q, generator);
   }
 
-
   public static BigInteger randomElement(BigInteger low, int bits) {
     BigInteger result = new BigInteger(bits, random);
     while (result.compareTo(low) <= 0) {
@@ -44,7 +42,15 @@ public record Group(BigInteger prime, BigInteger q, BigInteger generator) {
     return result;
   }
 
-  public BigInteger randomElementInQ(BigInteger low) {
+  public BigInteger randomElementInQ() {
     return randomElement(BigInteger.ONE, q.subtract(BigInteger.ONE).bitLength());
+  }
+
+  public BigInteger[] maskInput(BigInteger[] input) {
+    for (int i = 0; i < input.length; i++) {
+      BigInteger random = randomElementInQ();
+      input[i] = input[i].multiply(random);
+    }
+    return input;
   }
 }
