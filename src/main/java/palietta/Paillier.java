@@ -14,8 +14,8 @@ public final class Paillier {
       s[i] = Group.gaussian(security, group.n());
       h[i] = group.generator().modPow(s[i], group.nSquared());
     }
-    MasterPublicKey mpk = new MasterPublicKey(group.n(), group.generator(), h, y);
-    MasterSecretKey msk = new MasterSecretKey(s, x);
+    MasterPublicKey mpk = new MasterPublicKey(group.n(), group.generator(), h);
+    MasterSecretKey msk = new MasterSecretKey(s);
     return new Setup(mpk, msk);
   }
 
@@ -26,13 +26,19 @@ public final class Paillier {
     BigInteger[] ci = new BigInteger[y.length + 1];
     ci[0] = c0;
     for (int i = 1; i < ci.length; i++) {
-      ci[i] = BigInteger.ONE.add(y[i].multiply(group.n())).multiply(mpk.h[i].modPow(random, group.nSquared())).mod(group.nSquared());
+      ci[i] = BigInteger.ONE.add(y[i].multiply(group.n()))
+          .multiply(mpk.h[i].modPow(random, group.nSquared())).mod(group.nSquared());
     }
     return ci;
   }
 
-  static void decrypt(MasterPublicKey mpk, BigInteger sk, BigInteger[] c) {
-
+  static BigInteger decrypt(BigInteger sk, BigInteger[] c, BigInteger[] x, Group group) {
+    BigInteger cx = BigInteger.ONE;
+    BigInteger skInverse = sk.modInverse(group.nSquared());
+    for (int i = 1; i < c.length; i++) {
+      cx = cx.multiply(c[i].modPow(x[i - 1], group.nSquared()));
+    }
+    return cx.multiply(c[0].modPow(skInverse, group.nSquared())).mod(group.nSquared());
   }
 
   static BigInteger keyGen(MasterSecretKey msk, BigInteger[] x) {
@@ -43,12 +49,11 @@ public final class Paillier {
     return sk;
   }
 
-  public record MasterPublicKey(BigInteger n, BigInteger generator, BigInteger[] h,
-                                BigInteger[] y) {
+  public record MasterPublicKey(BigInteger n, BigInteger generator, BigInteger[] h) {
 
   }
 
-  public record MasterSecretKey(BigInteger[] s, BigInteger[] x) {
+  public record MasterSecretKey(BigInteger[] s) {
 
   }
 
