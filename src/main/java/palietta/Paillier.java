@@ -16,7 +16,7 @@ public final class Paillier {
     }
     MasterPublicKey mpk = new MasterPublicKey(group.n(), group.generator(), h);
     MasterSecretKey msk = new MasterSecretKey(s);
-    return new Setup(mpk, msk);
+    return new Setup(mpk, msk, group);
   }
 
   static BigInteger[] encrypt(MasterPublicKey mpk, BigInteger[] y, Group group) {
@@ -25,9 +25,11 @@ public final class Paillier {
     BigInteger c0 = group.generator().modPow(random, group.nSquared());
     BigInteger[] ci = new BigInteger[y.length + 1];
     ci[0] = c0;
+
     for (int i = 1; i < ci.length; i++) {
-      ci[i] = BigInteger.ONE.add(y[i].multiply(group.n()))
-          .multiply(mpk.h[i].modPow(random, group.nSquared())).mod(group.nSquared());
+      ci[i] = BigInteger.ONE.add(y[i - 1].multiply(group.n()))
+          .multiply(mpk.h[i - 1].modPow(random, group.nSquared())).mod(group.nSquared());
+
     }
     return ci;
   }
@@ -38,7 +40,9 @@ public final class Paillier {
     for (int i = 1; i < c.length; i++) {
       cx = cx.multiply(c[i].modPow(x[i - 1], group.nSquared()));
     }
-    return cx.multiply(c[0].modPow(skInverse, group.nSquared())).mod(group.nSquared());
+    BigInteger intermediate = cx.multiply(c[0].modPow(skInverse, group.nSquared()))
+        .mod(group.nSquared());
+    return intermediate.subtract(BigInteger.ONE).mod(group.nSquared()).divide(group.n());
   }
 
   static BigInteger keyGen(MasterSecretKey msk, BigInteger[] x) {
@@ -49,6 +53,16 @@ public final class Paillier {
     return sk;
   }
 
+  public static void main(String[] args) {
+    BigInteger[] x = new BigInteger[]{BigInteger.ONE, BigInteger.ONE, BigInteger.ZERO};
+    BigInteger[] y = new BigInteger[]{BigInteger.ZERO, BigInteger.ZERO, BigInteger.ONE};
+    Setup setup = setup(100, 3, x, y);
+    BigInteger skx = keyGen(setup.msk, x);
+    BigInteger[] cipher = encrypt(setup.mpk, y, setup.group);
+    BigInteger result = decrypt(skx, cipher, x, setup.group);
+    System.out.println(result);
+  }
+
   public record MasterPublicKey(BigInteger n, BigInteger generator, BigInteger[] h) {
 
   }
@@ -57,7 +71,7 @@ public final class Paillier {
 
   }
 
-  public record Setup(MasterPublicKey mpk, MasterSecretKey msk) {
+  public record Setup(MasterPublicKey mpk, MasterSecretKey msk, Group group) {
 
   }
 }
