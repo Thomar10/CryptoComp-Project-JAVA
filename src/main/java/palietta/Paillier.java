@@ -36,11 +36,10 @@ public final class Paillier {
 
   static BigInteger decrypt(BigInteger sk, BigInteger[] c, BigInteger[] x, Group group) {
     BigInteger cx = BigInteger.ONE;
-    BigInteger skInverse = sk.modInverse(group.nSquared());
     for (int i = 1; i < c.length; i++) {
       cx = cx.multiply(c[i].modPow(x[i - 1], group.nSquared()));
     }
-    BigInteger intermediate = cx.multiply(c[0].modPow(skInverse, group.nSquared()))
+    BigInteger intermediate = cx.multiply(c[0].modPow(sk.negate(), group.nSquared()))
         .mod(group.nSquared());
     return intermediate.subtract(BigInteger.ONE).mod(group.nSquared()).divide(group.n());
   }
@@ -54,7 +53,7 @@ public final class Paillier {
   }
 
   public static void main(String[] args) {
-    BigInteger[] x = new BigInteger[]{BigInteger.ONE, BigInteger.ONE, BigInteger.ZERO};
+    BigInteger[] x = new BigInteger[]{BigInteger.ONE, BigInteger.ONE, BigInteger.ONE};
     BigInteger[] y = new BigInteger[]{BigInteger.ZERO, BigInteger.ZERO, BigInteger.ONE};
     Setup setup = setup(100, 3, x, y);
     BigInteger skx = keyGen(setup.msk, x);
