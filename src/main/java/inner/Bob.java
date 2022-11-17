@@ -1,7 +1,7 @@
 package inner;
 
 import java.math.BigInteger;
-
+import group.Group;
 public final class Bob {
 
   private final BigInteger[] maskedInput;

@@ -1,7 +1,7 @@
 package inner;
 
 import java.math.BigInteger;
-
+import group.Group;
 /**
  * Notes:
  * Attack in exponent for encrypter, e.g. can the encrypter encrypt something so a decrypter for

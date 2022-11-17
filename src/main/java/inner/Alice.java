@@ -1,5 +1,6 @@
 package inner;
 
+import group.Group;
 import java.math.BigInteger;
 
 public final class Alice {
