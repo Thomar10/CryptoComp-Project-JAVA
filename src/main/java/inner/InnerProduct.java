@@ -1,7 +1,7 @@
 package inner;
 
+import group.SafePrimeGroup;
 import java.math.BigInteger;
-import group.Group;
 /**
  * Notes:
  * Attack in exponent for encrypter, e.g. can the encrypter encrypt something so a decrypter for
@@ -15,7 +15,7 @@ import group.Group;
 public class InnerProduct {
 
   static boolean decrypt(BigInteger ct0, BigInteger[] ct, BigInteger sky, BigInteger[] y,
-      Group group) {
+      SafePrimeGroup group) {
     BigInteger ct0Inverse = ct0.modPow(sky, group.prime()).modInverse(group.prime());
     BigInteger product = BigInteger.ONE;
     for (int i = 0; i < ct.length; i++) {
@@ -33,7 +33,7 @@ public class InnerProduct {
     return sum;
   }
 
-  static EncryptObj encrypt(BigInteger[] mpk, BigInteger[] x, Group group) {
+  static EncryptObj encrypt(BigInteger[] mpk, BigInteger[] x, SafePrimeGroup group) {
     BigInteger random = group.randomElementInQ();
     BigInteger ct0 = group.generator().modPow(random, group.prime());
     BigInteger[] ci = new BigInteger[x.length];
@@ -44,7 +44,7 @@ public class InnerProduct {
     return new EncryptObj(ct0, ci);
   }
 
-  static SetupObj setup(Group group) {
+  static SetupObj setup(SafePrimeGroup group) {
     int cipherSize = 3;
     BigInteger[] msk = new BigInteger[cipherSize];
     for (int i = 0; i < cipherSize; i++) {

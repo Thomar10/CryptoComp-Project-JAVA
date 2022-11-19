@@ -1,23 +1,22 @@
-package inner;
+package paillier;
 
-import group.SafePrimeGroup;
+
+import group.PaillierGroup;
 import java.math.BigInteger;
 
 public final class Alice {
-
   private final BigInteger[] maskedInput;
-  private final SafePrimeGroup group;
+  private final PaillierGroup group;
   private final BigInteger secretKey;
 
   public Alice(int input, Authority authority) {
     this.group = authority.getGroup();
     this.maskedInput = group.maskInput(getBits(input));
-    this.secretKey = authority.keyDer(maskedInput);
+    this.secretKey = authority.keyGen(maskedInput);
   }
 
-  public boolean decrypt(EncryptObj encryption) {
-    return InnerProduct.decrypt(encryption.ct0(), encryption.ci(), this.secretKey, this.maskedInput,
-        this.group);
+  public boolean decrypt(BigInteger[] encryption) {
+    return Paillier.decrypt(this.secretKey, encryption, this.maskedInput, this.group);
   }
 
   static BigInteger[] getBits(int input) {

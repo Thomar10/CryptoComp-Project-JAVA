@@ -1,13 +1,15 @@
-package inner;
+package paillier;
 
-import group.SafePrimeGroup;
+
+import group.PaillierGroup;
 import java.math.BigInteger;
+
 public final class Bob {
 
   private final BigInteger[] maskedInput;
   private final BigInteger[] mpk;
 
-  private final SafePrimeGroup group;
+  private final PaillierGroup group;
 
   public Bob(int input, Authority authority) {
     this.group = authority.getGroup();
@@ -15,8 +17,8 @@ public final class Bob {
     this.mpk = authority.getMpk();
   }
 
-  public EncryptObj encrypt() {
-    return InnerProduct.encrypt(mpk, maskedInput, group);
+  public BigInteger[] encrypt() {
+    return Paillier.encrypt(mpk, maskedInput, group);
   }
 
   private static BigInteger[] getBits(int input) {
