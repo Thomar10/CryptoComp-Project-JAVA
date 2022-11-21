@@ -16,12 +16,12 @@ public class InnerProduct {
 
   static boolean decrypt(BigInteger ct0, BigInteger[] ct, BigInteger sky, BigInteger[] y,
       SafePrimeGroup group) {
-    BigInteger ct0Inverse = ct0.modPow(sky, group.prime()).modInverse(group.prime());
+    BigInteger ct0Inverse = ct0.modPow(sky, group.p()).modInverse(group.p());
     BigInteger product = BigInteger.ONE;
     for (int i = 0; i < ct.length; i++) {
-      product = product.multiply(ct[i].modPow(y[i], group.prime()));
+      product = product.multiply(ct[i].modPow(y[i], group.p()));
     }
-    BigInteger h = product.multiply(ct0Inverse).mod(group.prime());
+    BigInteger h = product.multiply(ct0Inverse).mod(group.p());
     return h.compareTo(BigInteger.ONE) == 0;
   }
 
@@ -35,11 +35,11 @@ public class InnerProduct {
 
   static EncryptObj encrypt(BigInteger[] mpk, BigInteger[] x, SafePrimeGroup group) {
     BigInteger random = group.randomElementInQ();
-    BigInteger ct0 = group.generator().modPow(random, group.prime());
+    BigInteger ct0 = group.generator().modPow(random, group.p());
     BigInteger[] ci = new BigInteger[x.length];
     for (int i = 0; i < x.length; i++) {
-      ci[i] = mpk[i].modPow(random, group.prime())
-          .multiply(group.generator().modPow(x[i], group.prime()));
+      ci[i] = mpk[i].modPow(random, group.p())
+          .multiply(group.generator().modPow(x[i], group.p()));
     }
     return new EncryptObj(ct0, ci);
   }
@@ -53,7 +53,7 @@ public class InnerProduct {
 
     BigInteger[] mpk = new BigInteger[cipherSize];
     for (int i = 0; i < cipherSize; i++) {
-      mpk[i] = group.generator().modPow(msk[i], group.prime());
+      mpk[i] = group.generator().modPow(msk[i], group.p());
     }
     return new SetupObj(msk, mpk);
   }

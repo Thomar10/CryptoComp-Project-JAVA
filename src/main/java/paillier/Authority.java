@@ -23,7 +23,7 @@ public final class Authority {
   }
 
   public BigInteger keyGen(BigInteger[] x) {
-    return Paillier.keyGen(this.msk, x);
+    return Paillier.keyGen(this.msk, x, group);
   }
 
   static Authority setup(int security) {

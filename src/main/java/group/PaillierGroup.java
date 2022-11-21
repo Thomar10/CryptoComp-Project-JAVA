@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Random;
 
-public record PaillierGroup(BigInteger n, BigInteger nSquared, BigInteger generator)  {
+public record PaillierGroup(BigInteger n, BigInteger nSquared, BigInteger generator, BigInteger xBound, BigInteger yBound)  {
 
   static Random random = new Random();
 
@@ -18,13 +18,16 @@ public record PaillierGroup(BigInteger n, BigInteger nSquared, BigInteger genera
 
   public static PaillierGroup generateGroup(int security) {
     SafePrimeGroup group = SafePrimeGroup.generateGroup(security);
-    BigInteger n = group.prime().multiply(group.q());
+    SafePrimeGroup groupDot = SafePrimeGroup.generateGroup(security);
+    BigInteger xBound = BigInteger.ONE.shiftLeft(group.p().bitLength() - 1);
+    BigInteger yBound = BigInteger.ONE.shiftLeft(groupDot.p().bitLength() - 1);
+    BigInteger n = group.p().multiply(groupDot.p());
     BigInteger nSquared = n.pow(2);
     while (true) {
       BigInteger gPrim = randomElement(BigInteger.TWO,
           nSquared.subtract(BigInteger.ONE).bitLength());
       BigInteger generator = gPrim.modPow(BigInteger.TWO.multiply(n), nSquared);
-      return new PaillierGroup(n, nSquared, generator);
+      return new PaillierGroup(n, nSquared, generator, xBound, yBound);
     }
   }
 
@@ -37,15 +40,11 @@ public record PaillierGroup(BigInteger n, BigInteger nSquared, BigInteger genera
   }
 
 
-  public BigInteger[] maskInput(BigInteger[] input) {
+  public static BigInteger[] maskInput(BigInteger[] input, BigInteger bound) {
     for (int i = 0; i < input.length; i++) {
-      BigInteger random = randomElementInNSquare();
+      BigInteger random = randomElement(BigInteger.ONE, bound.subtract(BigInteger.ONE).bitLength());
       input[i] = input[i].multiply(random);
     }
     return input;
-  }
-
-  public BigInteger randomElementInNSquare() {
-    return randomElement(BigInteger.ONE, nSquared.subtract(BigInteger.ONE).bitLength());
   }
 }

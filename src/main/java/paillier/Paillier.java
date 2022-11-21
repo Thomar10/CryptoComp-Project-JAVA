@@ -18,6 +18,15 @@ public final class Paillier {
     return new Setup(h, s, group);
   }
   public static BigInteger[] encrypt(BigInteger[] mpk, BigInteger[] y, PaillierGroup group) {
+    BigInteger norm = BigInteger.ZERO;
+    for (BigInteger value: y) {
+      if (value.compareTo(norm) > 0) {
+        norm = value;
+      }
+    }
+    if (norm.compareTo(group.yBound()) > 0) {
+      throw new IllegalArgumentException("The norm of y is too big!");
+    }
     BigInteger random = randomElement(BigInteger.ZERO,
         group.n().divide(BigInteger.valueOf(4)).subtract(BigInteger.ONE).bitLength());
     BigInteger c0 = group.generator().modPow(random, group.nSquared());
@@ -44,7 +53,16 @@ public final class Paillier {
         .compareTo(BigInteger.ZERO) == 0;
   }
 
-  public static BigInteger keyGen(BigInteger[] msk, BigInteger[] x) {
+  public static BigInteger keyGen(BigInteger[] msk, BigInteger[] x, PaillierGroup group) {
+    BigInteger norm = BigInteger.ZERO;
+    for (BigInteger value: x) {
+      if (value.compareTo(norm) > 0) {
+        norm = value;
+      }
+    }
+    if (norm.compareTo(group.xBound()) > 0) {
+      throw new IllegalArgumentException("The norm of x is too big!");
+    }
     BigInteger sk = BigInteger.ZERO;
     for (int i = 0; i < x.length; i++) {
       sk = sk.add(msk[i].multiply(x[i]));

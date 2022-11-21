@@ -1,17 +1,17 @@
 package paillier;
 
-
 import group.PaillierGroup;
 import java.math.BigInteger;
 
 public final class Alice {
+
   private final BigInteger[] maskedInput;
   private final PaillierGroup group;
   private final BigInteger secretKey;
 
   public Alice(int input, Authority authority) {
     this.group = authority.getGroup();
-    this.maskedInput = group.maskInput(getBits(input));
+    this.maskedInput = PaillierGroup.maskInput(getBits(input), group.xBound());
     this.secretKey = authority.keyGen(maskedInput);
   }
 

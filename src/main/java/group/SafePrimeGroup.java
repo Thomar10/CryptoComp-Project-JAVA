@@ -3,7 +3,7 @@ package group;
 import java.math.BigInteger;
 import java.util.Random;
 
-public record SafePrimeGroup(BigInteger prime, BigInteger q, BigInteger generator) {
+public record SafePrimeGroup(BigInteger p, BigInteger q, BigInteger generator) {
 
   static Random random = new Random();
 

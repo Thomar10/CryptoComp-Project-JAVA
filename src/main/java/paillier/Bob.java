@@ -13,7 +13,7 @@ public final class Bob {
 
   public Bob(int input, Authority authority) {
     this.group = authority.getGroup();
-    this.maskedInput = group.maskInput(getBits(input));
+    this.maskedInput = PaillierGroup.maskInput(getBits(input), group.yBound());
     this.mpk = authority.getMpk();
   }
 
