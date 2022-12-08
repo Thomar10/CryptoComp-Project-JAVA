@@ -91,7 +91,7 @@ public class BenchmarkCrypto {
 
     public static final int COUNT = 13;
 
-    @Param({"10000"})
+    @Param({"1000"})
     private int iterations;
 
     private final BigInteger[][] y = new BigInteger[COUNT][];
@@ -103,10 +103,11 @@ public class BenchmarkCrypto {
 
     private BigInteger sky;
 
-    private final Paillier.Setup paillierSetup = Paillier.setup(100,
-        PaillierGroup.generateGroup(100));
+    private final int security = 1024;
+    private final Paillier.Setup paillierSetup = Paillier.setup(security,
+        PaillierGroup.generateGroup(security / 2));
     private final InnerProduct.SetupObj ddhSetup = InnerProduct.setup(
-        SafePrimeGroup.generateGroup(100));
+        SafePrimeGroup.generateGroup(security));
 
     /** Setup method for benchmarks. */
     @Setup(Level.Invocation)
