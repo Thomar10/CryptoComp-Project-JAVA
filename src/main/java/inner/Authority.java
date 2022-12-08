@@ -17,7 +17,7 @@ public final class Authority {
 
   static Authority setup(int security) {
     SafePrimeGroup group = SafePrimeGroup.generateGroup(security);
-    SetupObj setup = InnerProduct.setup(group);
+    InnerProduct.SetupObj setup = InnerProduct.setup(group);
     return new Authority(setup.msk(), setup.mpk(), group);
   }
 

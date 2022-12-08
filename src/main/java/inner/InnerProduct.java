@@ -14,7 +14,7 @@ import java.math.BigInteger;
  */
 public class InnerProduct {
 
-  static boolean decrypt(BigInteger ct0, BigInteger[] ct, BigInteger sky, BigInteger[] y,
+  public static boolean decrypt(BigInteger ct0, BigInteger[] ct, BigInteger sky, BigInteger[] y,
       SafePrimeGroup group) {
     BigInteger ct0Inverse = ct0.modPow(sky, group.p()).modInverse(group.p());
     BigInteger product = BigInteger.ONE;
@@ -25,7 +25,7 @@ public class InnerProduct {
     return h.compareTo(BigInteger.ONE) == 0;
   }
 
-  static BigInteger keyDer(BigInteger[] msk, BigInteger[] y) {
+  public static BigInteger keyDer(BigInteger[] msk, BigInteger[] y) {
     BigInteger sum = BigInteger.ZERO;
     for (int i = 0; i < msk.length; i++) {
       sum = sum.add(msk[i].multiply(y[i]));
@@ -33,7 +33,7 @@ public class InnerProduct {
     return sum;
   }
 
-  static EncryptObj encrypt(BigInteger[] mpk, BigInteger[] x, SafePrimeGroup group) {
+  public static EncryptObj encrypt(BigInteger[] mpk, BigInteger[] x, SafePrimeGroup group) {
     BigInteger random = group.randomElementInQ();
     BigInteger ct0 = group.generator().modPow(random, group.p());
     BigInteger[] ci = new BigInteger[x.length];
@@ -44,7 +44,7 @@ public class InnerProduct {
     return new EncryptObj(ct0, ci);
   }
 
-  static SetupObj setup(SafePrimeGroup group) {
+  public static SetupObj setup(SafePrimeGroup group) {
     int cipherSize = 3;
     BigInteger[] msk = new BigInteger[cipherSize];
     for (int i = 0; i < cipherSize; i++) {
@@ -55,10 +55,9 @@ public class InnerProduct {
     for (int i = 0; i < cipherSize; i++) {
       mpk[i] = group.generator().modPow(msk[i], group.p());
     }
-    return new SetupObj(msk, mpk);
+    return new SetupObj(msk, mpk, group);
   }
-}
+  public record SetupObj(BigInteger[] msk, BigInteger[] mpk, SafePrimeGroup group) {
 
-record SetupObj(BigInteger[] msk, BigInteger[] mpk) {
-
+  }
 }

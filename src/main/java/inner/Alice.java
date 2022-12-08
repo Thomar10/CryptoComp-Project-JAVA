@@ -5,18 +5,18 @@ import java.math.BigInteger;
 
 public final class Alice {
 
-  private final BigInteger[] maskedInput;
+  private final BigInteger[] input;
   private final SafePrimeGroup group;
   private final BigInteger secretKey;
 
   public Alice(int input, Authority authority) {
     this.group = authority.getGroup();
-    this.maskedInput = group.maskInput(getBits(input));
-    this.secretKey = authority.keyDer(maskedInput);
+    this.input = getBits(input);
+    this.secretKey = authority.keyDer(this.input);
   }
 
   public boolean decrypt(EncryptObj encryption) {
-    return InnerProduct.decrypt(encryption.ct0(), encryption.ci(), this.secretKey, this.maskedInput,
+    return InnerProduct.decrypt(encryption.ct0(), encryption.ci(), this.secretKey, this.input,
         this.group);
   }
 
